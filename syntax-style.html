@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syntax Style — La forma en que el código comunica</title>
+<meta name="description" content="Landing page académica sobre sintaxis y estilo de código.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   SYNTAX STYLE — Hoja de estilos
+   Tokens: superficie oscura slate, acento cian (sintaxis) → violeta (estilo)
+   Tipografía: Space Grotesk (display) / Inter (cuerpo) / JetBrains Mono (código)
+   ========================================================================== */
+
+:root {
+  /* Color */
+  --bg: #090b10;
+  --bg-alt: #0d1017;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-strong: rgba(255, 255, 255, 0.055);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #e9ecf3;
+  --text-muted: #8b93a7;
+  --text-faint: #5c6377;
+
+  --cyan: #4fd1c5;
+  --violet: #8b7cff;
+  --grad: linear-gradient(120deg, var(--cyan), var(--violet));
+  --grad-soft: linear-gradient(160deg, rgba(79, 209, 197, 0.14), rgba(139, 124, 255, 0.14));
+
+  --good: #35d07f;
+  --warn: #f5a623;
+  --error: #ff6b6b;
+
+  /* Type */
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", monospace;
+
+  /* Layout */
+  --container: 1180px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --nav-h: 68px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Tema claro (para exposición en salas iluminadas) ---------- */
+[data-theme="light"] {
+  --bg: #f4f5f9;
+  --bg-alt: #eceef4;
+  --surface: rgba(10, 14, 24, 0.035);
+  --surface-strong: rgba(10, 14, 24, 0.06);
+  --border: rgba(10, 14, 24, 0.10);
+  --border-strong: rgba(10, 14, 24, 0.20);
+  --text: #14161f;
+  --text-muted: #4c5265;
+  --text-faint: #7b8194;
+
+  --cyan: #0e8f83;
+  --violet: #6650e0;
+}
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(60% 40% at 15% 0%, rgba(14, 143, 131, 0.08), transparent 60%),
+    radial-gradient(50% 40% at 100% 20%, rgba(102, 80, 224, 0.07), transparent 60%),
+    var(--bg);
+}
+[data-theme="light"] .hero-bg {
+  background-image:
+    linear-gradient(rgba(10,14,24,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10,14,24,0.035) 1px, transparent 1px);
+}
+[data-theme="light"] .editor-body { color: #23283a; }
+[data-theme="light"] .navbar { background: rgba(244, 245, 249, 0.6); }
+[data-theme="light"] .navbar.scrolled { background: rgba(244, 245, 249, 0.9); }
+[data-theme="light"] .nav-link.active,
+[data-theme="light"] .tab-btn.active,
+[data-theme="light"] .btn-primary { color: #fff; }
+[data-theme="light"] .btn-presentation[aria-pressed="true"] { color: #fff; }
+
+/* ---------- Reset ---------- */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 12px); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.35s var(--ease), color 0.35s var(--ease);
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; margin: 0; padding: 0; }
+button { font: inherit; cursor: pointer; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.15; }
+p { margin: 0; }
+code, pre { font-family: var(--font-mono); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.container { max-width: var(--container); margin: 0 auto; padding: 0 28px; }
+.container-narrow { max-width: 760px; }
+
+/* ---------- Background ambience ---------- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 40% at 15% 0%, rgba(79, 209, 197, 0.08), transparent 60%),
+    radial-gradient(50% 40% at 100% 20%, rgba(139, 124, 255, 0.08), transparent 60%),
+    var(--bg);
+}
+
+/* ==========================================================================
+   NAVBAR
+   ========================================================================== */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  background: rgba(9, 11, 16, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.navbar.scrolled {
+  background: rgba(9, 11, 16, 0.85);
+  border-bottom-color: var(--border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.navbar-inner {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.brand { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+.brand-mark { color: var(--cyan); font-family: var(--font-mono); }
+.brand-text em { font-style: normal; color: var(--violet); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 56vw;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-link {
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--bg); background: var(--grad); font-weight: 600; }
+
+.navbar-actions { display: flex; align-items: center; gap: 12px; }
+
+/* ---------- Language toggle ---------- */
+.btn-lang {
+  min-width: 38px; height: 38px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.btn-lang:hover { border-color: var(--border-strong); color: var(--text); }
+
+/* ---------- Theme toggle ---------- */
+.btn-theme {
+  position: relative;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.btn-theme:hover { border-color: var(--border-strong); }
+.theme-icon { position: absolute; font-size: 0.95rem; transition: opacity 0.25s var(--ease), transform 0.25s var(--ease); }
+.theme-icon-sun { color: var(--warn); opacity: 0; transform: scale(0.6) rotate(-90deg); }
+.theme-icon-moon { color: var(--cyan); opacity: 1; transform: scale(1) rotate(0); }
+[data-theme="light"] .theme-icon-sun { opacity: 1; transform: scale(1) rotate(0); }
+[data-theme="light"] .theme-icon-moon { opacity: 0; transform: scale(0.6) rotate(90deg); }
+
+.btn-presentation {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  transition: all 0.2s var(--ease);
+}
+.btn-presentation .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); transition: background 0.2s; }
+.btn-presentation:hover { border-color: var(--border-strong); color: var(--text); }
+.btn-presentation[aria-pressed="true"] { color: var(--bg); background: var(--grad); border-color: transparent; }
+.btn-presentation[aria-pressed="true"] .dot { background: var(--bg); box-shadow: 0 0 0 3px rgba(255,255,255,0.35); }
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 6px;
+}
+.hamburger span { width: 22px; height: 2px; background: var(--text); transition: transform 0.25s var(--ease), opacity 0.25s var(--ease); }
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- Section indicator (presentation mode) ---------- */
+.section-indicator {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 190;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease);
+}
+body.presentation-mode .section-indicator { opacity: 1; }
+.section-indicator #sectionCurrent { color: var(--cyan); font-weight: 700; }
+
+/* ==========================================================================
+   SECTIONS — generic
+   ========================================================================== */
+.section { padding: 108px 0; position: relative; }
+.section-alt { background: linear-gradient(180deg, transparent, rgba(255,255,255,0.015) 12%, rgba(255,255,255,0.015) 88%, transparent); }
+
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--cyan);
+  border: 1px solid rgba(79, 209, 197, 0.35);
+  background: rgba(79, 209, 197, 0.08);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 22px;
+}
+
+.section-title {
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 600;
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+.section-lead {
+  color: var(--text-muted);
+  font-size: 1.02rem;
+  max-width: 640px;
+  margin-bottom: 48px;
+}
+
+.grad-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Reveal-on-scroll ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  border: 1px solid transparent;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.btn-primary { background: var(--grad); color: #06090d; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(79, 209, 197, 0.18); }
+.btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--text); }
+.btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--nav-h) + 40px);
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(60% 60% at 50% 30%, black, transparent);
+}
+.hero-grid {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 28px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.hero-title {
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.hero-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.hero-text { color: var(--text-muted); font-size: 1.04rem; max-width: 520px; margin-bottom: 34px; }
+.hero-text strong { color: var(--text); font-weight: 600; }
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.scroll-cue {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px; height: 38px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.scroll-cue span { width: 4px; height: 8px; border-radius: 2px; background: var(--cyan); animation: scrollcue 1.6s infinite var(--ease); }
+@keyframes scrollcue { 0% { transform: translateY(0); opacity: 1; } 70% { opacity: 0.2; } 100% { transform: translateY(10px); opacity: 0; } }
+
+/* ---------- Editor / terminal chrome (signature motif) ---------- */
+.editor-window {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+.editor-chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.editor-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.85; }
+.editor-dot.red { background: #ff5f57; }
+.editor-dot.yellow { background: #febc2e; }
+.editor-dot.green { background: #28c840; }
+.editor-filename { margin-left: 10px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-faint); }
+.editor-body {
+  margin: 0;
+  padding: 24px;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #d7dceb;
+  white-space: pre-wrap;
+  min-height: 3em;
+}
+.editor-body.compact { padding: 18px 20px; font-size: 0.86rem; }
+.editor-body.small { font-size: 0.8rem; padding: 16px 18px; }
+.editor-cursor {
+  display: inline-block;
+  width: 8px; height: 1.1em;
+  background: var(--cyan);
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.hero-editor { position: relative; }
+
+/* ==========================================================================
+   ANALOGÍA — LITERATURA Y LINGÜÍSTICA (versión breve)
+   ========================================================================== */
+.poem-section { text-align: center; }
+.poem-section .eyebrow { margin-bottom: 40px; }
+
+.phrase-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 40px;
+}
+.phrase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+.phrase-text { font-family: var(--font-mono); font-size: 0.98rem; color: var(--text); }
+.phrase-diff { color: var(--error); font-weight: 700; }
+.phrase-note { font-size: 0.76rem; color: var(--text-faint); }
+
+.poem-line {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.1vw, 1.5rem);
+  color: var(--text);
+  max-width: 620px;
+  margin: 0 auto 6px;
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   CONCEPTO (Syntax / Style)
+   ========================================================================== */
+.concept-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 22px;
+  align-items: center;
+}
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 30px;
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.concept-card:hover { border-color: var(--border-strong); transform: translateY(-4px); }
+.concept-icon { display: inline-flex; font-family: var(--font-mono); font-size: 1.4rem; color: var(--cyan); margin-bottom: 14px; }
+.concept-card:nth-child(3) .concept-icon { color: var(--violet); }
+.concept-card h3 { font-size: 1.5rem; margin-bottom: 12px; }
+.concept-card p { color: var(--text-muted); margin-bottom: 18px; }
+.concept-question { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text); border-top: 1px solid var(--border); padding-top: 14px; display: block; }
+.concept-connector { display: flex; justify-content: center; font-size: 1.6rem; color: var(--text-faint); }
+
+/* ==========================================================================
+   ANATOMÍA
+   ========================================================================== */
+.anatomy-wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+.anatomy-code .tok {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 1px 3px;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.anatomy-code .tok:hover, .anatomy-code .tok:focus, .anatomy-code .tok.tok-active {
+  background: rgba(79, 209, 197, 0.16);
+  color: var(--cyan);
+  outline: none;
+}
+.anatomy-explain {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 26px;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+}
+.anatomy-placeholder { color: var(--text-faint); font-size: 0.92rem; }
+.anatomy-explain .tip-term { font-family: var(--font-mono); color: var(--cyan); font-weight: 600; display: block; margin-bottom: 8px; font-size: 1.05rem; }
+.anatomy-explain .tip-desc { color: var(--text-muted); font-size: 0.95rem; }
+
+/* ==========================================================================
+   COMPARACIÓN (Sintaxis vs Estilo)
+   ========================================================================== */
+.vs-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; align-items: center; margin-bottom: 48px; }
+.code-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.code-card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+.badge { font-family: var(--font-mono); font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; }
+.badge-warn { color: var(--warn); background: rgba(245, 166, 35, 0.12); border: 1px solid rgba(245, 166, 35, 0.3); }
+.badge-good { color: var(--good); background: rgba(53, 208, 127, 0.12); border: 1px solid rgba(53, 208, 127, 0.3); }
+.vs-arrow { display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; text-align: center; }
+.arrow-line { width: 46px; height: 1px; background: var(--grad); }
+
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.metric-item { display: flex; flex-direction: column; gap: 10px; }
+.metric-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+.metric-fill { height: 100%; width: 0; background: var(--grad); border-radius: 999px; transition: width 1s var(--ease); }
+.metric-label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+.metric-caption { margin-top: 18px; color: var(--text-faint); font-size: 0.82rem; }
+
+/* ==========================================================================
+   REGLAS DE ESTILO
+   ========================================================================== */
+.rules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 64px; }
+.rule-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 26px;
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.rule-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+.rule-num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--violet); }
+.rule-card h3 { font-size: 1.1rem; margin: 8px 0 14px; }
+.rule-card p { color: var(--text-muted); font-size: 0.88rem; margin-top: 14px; }
+.rule-card .rule-compare { font-family: var(--font-mono); font-size: 0.78rem; }
+.strike { text-decoration: line-through; color: var(--text-faint); }
+.strike-inline { text-decoration: line-through; color: var(--text-faint); display: block; }
+
+/* ---------- Ordena el código ---------- */
+.order-demo {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 34px;
+}
+.order-title { font-size: 1.15rem; margin-bottom: 22px; font-weight: 600; }
+.order-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: center; }
+.order-side { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.order-tag { font-family: var(--font-mono); font-size: 0.82rem; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--text-muted); transition: all 0.3s var(--ease); }
+.order-tag.before { color: var(--warn); border-color: rgba(245,166,35,0.35); background: rgba(245,166,35,0.08); }
+.order-tag.after { color: var(--good); border-color: rgba(53,208,127,0.35); background: rgba(53,208,127,0.08); }
+#orderCode.transitioning { opacity: 0.3; transition: opacity 0.2s var(--ease); }
+
+/* ==========================================================================
+   LENGUAJES (tabs)
+   ========================================================================== */
+.tabs { max-width: 720px; }
+.tab-list { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-family: var(--font-mono);
+  transition: all 0.2s var(--ease);
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--bg); background: var(--grad); border-color: transparent; font-weight: 600; }
+.lang-explain { color: var(--text-muted); font-size: 0.92rem; margin-top: 18px; }
+.lang-explain code { color: var(--cyan); }
+.lang-conclusion { margin-top: 40px; font-family: var(--font-mono); font-size: 1.05rem; color: var(--text); }
+
+/* ==========================================================================
+   SYNTAX STYLE EN DISEÑO WEB (versión breve)
+   ========================================================================== */
+.web-note-compact {
+  max-width: 640px;
+  margin: 28px auto 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+.web-note-compact code { font-family: var(--font-mono); color: var(--violet); font-size: 0.88em; }
+
+/* ==========================================================================
+   CÓDIGO LIMPIO
+   ========================================================================== */
+.big-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.3rem);
+  font-weight: 600;
+  text-align: center;
+  margin: 0 0 60px;
+  line-height: 1.35;
+}
+.principles-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.principle-card { text-align: center; padding: 26px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.principle-icon { display: block; font-size: 1.6rem; color: var(--cyan); margin-bottom: 12px; }
+.principle-card h3 { font-size: 1rem; margin-bottom: 8px; }
+.principle-card p { color: var(--text-muted); font-size: 0.85rem; }
+
+/* ==========================================================================
+   ERROR INTERACTIVO
+   ========================================================================== */
+.error-wrap { max-width: 640px; }
+.error-hints { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 26px; }
+.hint-chip { font-family: var(--font-mono); font-size: 0.76rem; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255, 107, 107, 0.35); color: var(--error); background: rgba(255, 107, 107, 0.08); }
+.hint-chip em { color: var(--text-faint); font-style: normal; }
+.solution-box { margin-top: 26px; animation: fadein 0.5s var(--ease); }
+@keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ==========================================================================
+   FLUJO VISUAL
+   ========================================================================== */
+.flow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.flow-step {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 14px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  letter-spacing: 0.02em;
+}
+.flow-step:nth-child(7) span, .flow-step:last-child span { color: var(--violet); }
+.flow-step:first-child span { color: var(--cyan); }
+.flow-arrow { color: var(--text-faint); font-size: 1.1rem; }
+
+/* ==========================================================================
+   BUENAS PRÁCTICAS
+   ========================================================================== */
+.practices-list { display: flex; flex-direction: column; gap: 4px; }
+.practices-list li {
+  position: relative;
+  padding: 16px 0 16px 34px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+.practices-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--good);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.practices-list li:last-child { border-bottom: none; }
+
+/* ==========================================================================
+   CONCLUSIÓN
+   ========================================================================== */
+.conclusion { text-align: center; background: var(--grad-soft); }
+.conclusion-title { font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 600; margin-bottom: 44px; }
+.conclusion-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 44px; }
+.conclusion-item {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 24px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.03);
+}
+.conclusion-label { font-family: var(--font-mono); font-size: 0.78rem; color: var(--cyan); }
+.conclusion-value { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.footer { text-align: center; padding: 34px 20px; color: var(--text-faint); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+/* ==========================================================================
+   MODO PRESENTACIÓN
+   ========================================================================== */
+body.presentation-mode .concept-question,
+body.presentation-mode .metric-caption,
+body.presentation-mode .footer,
+body.presentation-mode .scroll-cue,
+body.presentation-mode .hero-bg { opacity: 0.4; }
+body.presentation-mode .section-title { font-size: clamp(2.1rem, 4.2vw, 3.1rem); }
+body.presentation-mode .section-lead { font-size: 1.15rem; }
+body.presentation-mode .editor-body { font-size: 1.08rem; }
+body.presentation-mode .hero-title { font-size: clamp(3.2rem, 7.5vw, 5.6rem); }
+body.presentation-mode .section { padding: 130px 0; }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 980px) {
+  .nav-links { display: none; max-width: none; }
+  .hamburger { display: flex; }
+  body.nav-open .nav-links {
+    display: flex;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    flex-direction: column;
+    background: rgba(9, 11, 16, 0.98);
+    padding: 18px 24px 28px;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  body.nav-open .nav-link { padding: 12px 14px; }
+
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .hero-editor { order: -1; }
+
+  .concept-grid { grid-template-columns: 1fr; }
+  .concept-connector { transform: rotate(90deg); padding: 6px 0; }
+
+  .anatomy-wrap { grid-template-columns: 1fr; }
+
+  .vs-grid { grid-template-columns: 1fr; }
+  .vs-arrow { flex-direction: row; justify-content: center; }
+  .arrow-line { width: 30px; }
+
+  .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  .rules-grid { grid-template-columns: repeat(2, 1fr); }
+  .principles-grid { grid-template-columns: repeat(2, 1fr); }
+  .conclusion-grid { grid-template-columns: 1fr; }
+
+  .order-grid { grid-template-columns: 1fr; }
+  .chart-row { grid-template-columns: 90px 1fr 1fr; gap: 8px; }
+
+  .phrase-compare { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .section { padding: 76px 0; }
+  .container { padding: 0 18px; }
+  .rules-grid { grid-template-columns: 1fr; }
+  .principles-grid { grid-template-columns: 1fr; }
+  .metric-grid { grid-template-columns: 1fr; }
+  .btn-presentation span:not(.dot) { display: none; }
+  .navbar-actions { gap: 6px; }
+  .btn-theme { width: 34px; height: 34px; }
+  .flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============ PROGRESO DE SECCIÓN (modo presentación) ============ -->
+<div class="section-indicator" id="sectionIndicator" aria-hidden="true">
+  <span id="sectionCurrent">01</span> / <span id="sectionTotal">08</span>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#inicio" class="brand">
+      <span class="brand-mark">&lt;/&gt;</span>
+      <span class="brand-text">syntax<em>style</em></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks" aria-label="Navegación principal">
+      <a href="#inicio" class="nav-link active" data-section="inicio" data-i18n="nav-inicio">Inicio</a>
+      <a href="#analogia" class="nav-link" data-section="analogia" data-i18n="nav-analogia">Analogía</a>
+      <a href="#concepto" class="nav-link" data-section="concepto" data-i18n="nav-concepto">Concepto</a>
+      <a href="#anatomia" class="nav-link" data-section="anatomia" data-i18n="nav-anatomia">Anatomía</a>
+      <a href="#comparacion" class="nav-link" data-section="comparacion" data-i18n="nav-comparacion">Comparación</a>
+      <a href="#estilos" class="nav-link" data-section="estilos" data-i18n="nav-estilos">Estilos</a>
+      <a href="#lenguajes" class="nav-link" data-section="lenguajes" data-i18n="nav-lenguajes">Lenguajes</a>
+      <a href="#disenoweb" class="nav-link" data-section="disenoweb" data-i18n="nav-disenoweb">Web</a>
+      <a href="#practicas" class="nav-link" data-section="practicas" data-i18n="nav-practicas">Prácticas</a>
+      <a href="#conclusion" class="nav-link" data-section="conclusion" data-i18n="nav-conclusion">Conclusión</a>
+    </nav>
+
+    <div class="navbar-actions">
+      <button class="btn-lang" id="langToggle" aria-label="Switch to English" type="button">EN</button>
+      <button class="btn-theme" id="themeToggle" aria-label="Cambiar a modo claro" aria-pressed="false">
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">☾</span>
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">☀</span>
+      </button>
+      <button class="btn-presentation" id="presentationToggle" aria-pressed="false">
+        <span class="dot" aria-hidden="true"></span> <span data-i18n="presentation-label">Modo presentación</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ 1. HERO ============ -->
+  <section id="inicio" class="section hero" aria-label="Introducción">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-grid">
+      <div class="hero-copy reveal">
+        <span class="eyebrow" data-i18n="hero-eyebrow">Paula Cogua - Edwin García - Programación en JAVA E161</span>
+        <h1 class="hero-title">SYNTAX <span class="grad-text">STYLE</span></h1>
+        <p class="hero-subtitle" data-i18n="hero-subtitle">La forma en que el código comunica</p>
+        <p class="hero-text" data-i18n="hero-text">
+          Comprender la <strong>sintaxis</strong> permite escribir instrucciones que las máquinas puedan interpretar.
+          Comprender el <strong>estilo</strong> permite que esas instrucciones también sean claras para las personas.
+        </p>
+        <div class="hero-actions">
+          <a href="#concepto" class="btn btn-primary" data-i18n="hero-btn-explore">Explorar el tema</a>
+          <a href="#estilos-ordena" class="btn btn-ghost" data-i18n="hero-btn-example">Ver ejemplo</a>
+        </div>
+      </div>
+
+      <div class="hero-editor reveal" aria-hidden="false">
+        <div class="editor-window" role="img" aria-label="Editor de código mostrando una función de saludo en JavaScript" data-i18n-aria="hero-editor-aria">
+          <div class="editor-chrome">
+            <span class="editor-dot red"></span>
+            <span class="editor-dot yellow"></span>
+            <span class="editor-dot green"></span>
+            <span class="editor-filename" id="heroFilename" data-i18n="hero-filename">saludo.js</span>
+          </div>
+          <pre class="editor-body"><code id="heroTypedCode"></code><span class="editor-cursor" aria-hidden="true"></span></pre>
+        </div>
+      </div>
+    </div>
+    <a href="#analogia" class="scroll-cue" aria-hidden="true"><span></span></a>
+  </section>
+
+  <!-- ============ 1B. ANALOGÍA — LITERATURA Y LINGÜÍSTICA ============ -->
+  <section id="analogia" class="section poem-section" aria-label="Analogía con la literatura y la lingüística">
+    <div class="container container-narrow">
+      <span class="eyebrow reveal" data-i18n="analogia-eyebrow">Literatura &amp; lingüística</span>
+
+      <div class="phrase-compare reveal">
+        <div class="phrase-card">
+          <span class="phrase-text" data-i18n="phrase1-text">No<span class="phrase-diff">,</span> está muy tarde.</span>
+          <span class="phrase-note" data-i18n="phrase1-note">Coma tras "No" → pausa que refuerza la negación</span>
+        </div>
+        <div class="phrase-card">
+          <span class="phrase-text" data-i18n="phrase2-text">No está muy tarde.</span>
+          <span class="phrase-note" data-i18n="phrase2-note">Sin coma → afirma que aún hay tiempo</span>
+        </div>
+        <div class="phrase-card">
+          <span class="phrase-text" data-i18n="phrase3-text">No está m<span class="phrase-diff">ui</span> tarde.</span>
+          <span class="phrase-note" data-i18n="phrase3-note">"mui" en vez de "muy" → la forma se rompe</span>
+        </div>
+      </div>
+
+      <p class="poem-line reveal" data-i18n="poem-line1">Tres frases.</p>
+      <p class="poem-line reveal" data-i18n="poem-line2">Casi las mismas palabras.</p>
+      <p class="poem-line reveal" data-i18n="poem-line3">Pero no significan exactamente lo mismo.</p>
+    </div>
+  </section>
+
+  <!-- ============ 2. QUÉ ES SYNTAX STYLE ============ -->
+  <section id="concepto" class="section" aria-label="Qué es Syntax Style">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="concepto-title">¿Qué es <span class="grad-text">Syntax Style</span>?</h2>
+      <p class="section-lead reveal" data-i18n="concepto-lead">Dos conceptos distintos, unidos por un mismo objetivo: que el código funcione y se entienda.</p>
+
+      <div class="concept-grid">
+        <article class="concept-card reveal">
+          <span class="concept-icon" aria-hidden="true">{ }</span>
+          <h3>Syntax</h3>
+          <p data-i18n="concept1-desc">La sintaxis define las reglas que determinan cómo debe escribirse un lenguaje de programación para que pueda ser interpretado correctamente.</p>
+          <span class="concept-question" data-i18n="concept1-question">¿Cómo debe escribirse?</span>
+        </article>
+
+        <div class="concept-connector reveal" aria-hidden="true">
+          <span>→</span>
+        </div>
+
+        <article class="concept-card reveal">
+          <span class="concept-icon" aria-hidden="true">✎</span>
+          <h3>Style</h3>
+          <p data-i18n="concept2-desc">El estilo define cómo organizamos y presentamos ese código para hacerlo más legible, consistente y fácil de mantener.</p>
+          <span class="concept-question" data-i18n="concept2-question">¿Cómo podemos escribirlo mejor?</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. ANATOMÍA DEL CÓDIGO ============ -->
+  <section id="anatomia" class="section section-alt" aria-label="Anatomía del código">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="anatomia-title">Anatomía del código</h2>
+      <p class="section-lead reveal" data-i18n="anatomia-lead">Pasa el cursor o toca cada elemento para descubrir qué función cumple dentro de la sintaxis.</p>
+
+      <div class="anatomy-wrap reveal">
+        <div class="editor-window anatomy-editor">
+          <div class="editor-chrome">
+            <span class="editor-dot red"></span>
+            <span class="editor-dot yellow"></span>
+            <span class="editor-dot green"></span>
+            <span class="editor-filename">edad.js</span>
+          </div>
+          <pre class="editor-body anatomy-code" id="anatomyCode" tabindex="0"><code
+><span class="tok" data-tip="Palabra reservada: declara una constante cuyo valor no puede reasignarse." data-tip-en="Reserved word: declares a constant whose value cannot be reassigned.">const</span> <span class="tok" data-tip="Variable: nombre que almacena un valor dentro del programa." data-tip-en="Variable: name that stores a value within the program.">edad</span> <span class="tok" data-tip="Operador de asignación: guarda el valor de la derecha en la variable de la izquierda." data-tip-en="Assignment operator: stores the value on the right into the variable on the left.">=</span> <span class="tok" data-tip="Valor: dato literal asignado directamente en el código." data-tip-en="Value: literal data assigned directly in the code.">25</span>;
+
+<span class="tok" data-tip="Estructura de control: evalúa una condición y decide qué bloque ejecutar." data-tip-en="Control structure: evaluates a condition and decides which block to execute.">if</span> (edad <span class="tok" data-tip="Operador de comparación: verifica si un valor es mayor o igual que otro." data-tip-en="Comparison operator: checks whether one value is greater than or equal to another.">&gt;=</span> 18) <span class="tok" data-tip="Bloque de código: agrupa las instrucciones que se ejecutan si la condición es verdadera." data-tip-en="Code block: groups the instructions that run if the condition is true.">{</span>
+    <span class="tok" data-tip="Función: método que imprime información en la consola." data-tip-en="Function: method that prints information to the console.">console.log</span>(<span class="tok" data-tip="Cadena de texto: secuencia de caracteres delimitada por comillas." data-tip-en="String: a sequence of characters delimited by quotes.">"Mayor de edad"</span>);
+<span class="tok" data-tip="Cierra el bloque de código abierto por la llave anterior." data-tip-en="Closes the code block opened by the previous brace.">}</span></code></pre>
+        </div>
+        <div class="anatomy-explain" id="anatomyExplain" aria-live="polite">
+          <p class="anatomy-placeholder" data-i18n="anatomy-placeholder">Selecciona un elemento del código para ver su explicación aquí.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. SINTAXIS VS ESTILO ============ -->
+  <section id="comparacion" class="section" aria-label="Sintaxis vs estilo">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="comparacion-title">Sintaxis vs. Estilo</h2>
+      <p class="section-lead reveal" data-i18n="comparacion-lead">Ambos fragmentos son sintácticamente correctos. Solo uno comunica con claridad.</p>
+
+      <div class="vs-grid reveal">
+        <div class="code-card">
+          <div class="code-card-head">
+            <span class="badge badge-warn" data-i18n="badge-a">Código A — Funciona</span>
+          </div>
+          <pre class="editor-body compact"><code>function calcular(a,b){
+return a+b;
+}</code></pre>
+        </div>
+
+        <div class="vs-arrow" aria-hidden="true">
+          <span data-i18n="vs-arrow-top">MISMA LÓGICA</span>
+          <div class="arrow-line"></div>
+          <span data-i18n="vs-arrow-bottom">DIFERENTE LEGIBILIDAD</span>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card-head">
+            <span class="badge badge-good" data-i18n="badge-b">Código B — Mejor estilo</span>
+          </div>
+          <pre class="editor-body compact"><code>function calcular(a, b) {
+    return a + b;
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="metric-grid reveal">
+        <div class="metric-item">
+          <div class="metric-bar"><div class="metric-fill" data-fill="35"></div></div>
+          <span class="metric-label" data-i18n="metric1">Legibilidad</span>
+        </div>
+        <div class="metric-item">
+          <div class="metric-bar"><div class="metric-fill" data-fill="40"></div></div>
+          <span class="metric-label" data-i18n="metric2">Consistencia</span>
+        </div>
+        <div class="metric-item">
+          <div class="metric-bar"><div class="metric-fill" data-fill="30"></div></div>
+          <span class="metric-label" data-i18n="metric3">Mantenibilidad</span>
+        </div>
+        <div class="metric-item">
+          <div class="metric-bar"><div class="metric-fill" data-fill="45"></div></div>
+          <span class="metric-label" data-i18n="metric4">Comprensión</span>
+        </div>
+      </div>
+      <p class="metric-caption" data-i18n="metric-caption">Comparación cualitativa de código A (sin estilo) frente a código B (con estilo).</p>
+    </div>
+  </section>
+
+  <!-- ============ 5. REGLAS DE ESTILO ============ -->
+  <section id="estilos" class="section section-alt" aria-label="Reglas de estilo">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="estilos-title">Reglas de estilo</h2>
+      <p class="section-lead reveal" data-i18n="estilos-lead">Cinco convenciones que transforman código funcional en código legible.</p>
+
+      <div class="rules-grid">
+        <article class="rule-card reveal">
+          <span class="rule-num">01</span>
+          <h3 data-i18n="rule1-title">Indentación</h3>
+          <pre class="editor-body compact small"><code>if (usuario) {
+    mostrarPerfil();
+}</code></pre>
+          <p data-i18n="rule1-desc">La indentación facilita identificar visualmente dónde comienza y termina cada bloque de código.</p>
+        </article>
+
+        <article class="rule-card reveal">
+          <span class="rule-num">02</span>
+          <h3 data-i18n="rule2-title">Espaciado</h3>
+          <pre class="editor-body compact small"><code>let total = precio * cantidad;</code></pre>
+          <p class="rule-compare" data-i18n="rule2-desc"><span class="strike">let total=precio*cantidad;</span> — sin espacios, más difícil de leer de un vistazo.</p>
+        </article>
+
+        <article class="rule-card reveal">
+          <span class="rule-num">03</span>
+          <h3 data-i18n="rule3-title">Nombres descriptivos</h3>
+          <pre class="editor-body compact small"><code><span class="strike-inline">let x = 25;</span>
+let edadUsuario = 25;</code></pre>
+          <p data-i18n="rule3-desc">Un nombre descriptivo explica su propósito sin necesitar comentarios adicionales.</p>
+        </article>
+
+        <article class="rule-card reveal">
+          <span class="rule-num">04</span>
+          <h3 data-i18n="rule4-title">Consistencia</h3>
+          <pre class="editor-body compact small"><code>userName
+user_name</code></pre>
+          <p data-i18n="rule4-desc">Ninguna convención es incorrecta por sí sola; lo importante es mantenerla uniforme en todo el proyecto.</p>
+        </article>
+
+        <article class="rule-card reveal">
+          <span class="rule-num">05</span>
+          <h3 data-i18n="rule5-title">Comentarios</h3>
+          <pre class="editor-body compact small"><code>// Calcula el total de la compra
+const total = precio * cantidad;</code></pre>
+          <p data-i18n="rule5-desc">Un buen comentario aporta contexto que el código por sí solo no puede transmitir.</p>
+        </article>
+      </div>
+
+      <!-- ============ 6. ORDENA EL CÓDIGO (interactividad) ============ -->
+      <div class="order-demo reveal" id="estilos-ordena">
+        <h3 class="order-title" data-i18n="order-title">Interactividad: ordena el código</h3>
+        <div class="order-grid">
+          <div class="editor-window">
+            <div class="editor-chrome">
+              <span class="editor-dot red"></span><span class="editor-dot yellow"></span><span class="editor-dot green"></span>
+              <span class="editor-filename">total.js</span>
+            </div>
+            <pre class="editor-body" id="orderCodeBlock"><code id="orderCode">function calcularTotal(precio,cantidad){
+let total=precio*cantidad;
+return total;
+}</code></pre>
+          </div>
+          <div class="order-side">
+            <button class="btn btn-primary" id="applyStyleBtn">Aplicar style</button>
+            <div class="order-state" id="orderState">
+              <span class="order-tag before" id="orderTag">Antes → Menor legibilidad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. COMPARACIÓN ENTRE LENGUAJES ============ -->
+  <section id="lenguajes" class="section" aria-label="Comparación entre lenguajes">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="lenguajes-title">Cada lenguaje tiene su propia sintaxis</h2>
+      <p class="section-lead reveal" data-i18n="lenguajes-lead">La misma lógica, expresada con reglas distintas.</p>
+
+      <div class="tabs reveal">
+        <div class="tab-list" role="tablist" aria-label="Lenguajes de programación">
+          <button class="tab-btn active" role="tab" aria-selected="true" data-lang="js">JavaScript</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-lang="py">Python</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-lang="java">Java</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-lang="cpp">C++</button>
+        </div>
+
+        <div class="tab-panel-wrap">
+          <div class="editor-window">
+            <div class="editor-chrome">
+              <span class="editor-dot red"></span><span class="editor-dot yellow"></span><span class="editor-dot green"></span>
+              <span class="editor-filename" id="langFilename">sumar.js</span>
+            </div>
+            <pre class="editor-body"><code id="langCode">function sumar(a, b) {
+    return a + b;
+}</code></pre>
+          </div>
+          <p class="lang-explain" id="langExplain">JavaScript utiliza <code>function</code>, llaves para delimitar bloques y punto y coma opcional al final de cada instrucción.</p>
+        </div>
+      </div>
+
+      <p class="lang-conclusion reveal" data-i18n="lang-conclusion">Diferente sintaxis → mismo objetivo.</p>
+    </div>
+  </section>
+
+  <!-- ============ 7B. SYNTAX STYLE EN DISEÑO WEB (breve) ============ -->
+  <section id="disenoweb" class="section section-alt" aria-label="Syntax Style en diseño web">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="disenoweb-title">Syntax Style en <span class="grad-text">diseño web</span></h2>
+
+      <div class="vs-grid reveal">
+        <div class="code-card">
+          <div class="code-card-head">
+            <span class="badge badge-warn" data-i18n="badge-html-bad">HTML — Etiqueta sin cerrar</span>
+          </div>
+          <pre class="editor-body compact"><code>&lt;div class="card"&gt;
+  &lt;h2&gt;Título
+  &lt;p&gt;Texto sin cerrar
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <div class="vs-arrow" aria-hidden="true">
+          <span data-i18n="vs-arrow2-top">MISMA INTENCIÓN</span>
+          <div class="arrow-line"></div>
+          <span data-i18n="vs-arrow2-bottom">DISTINTO RENDERIZADO</span>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card-head">
+            <span class="badge badge-good" data-i18n="badge-html-good">HTML — Estructura correcta</span>
+          </div>
+          <pre class="editor-body compact"><code>&lt;div class="card"&gt;
+  &lt;h2&gt;Título&lt;/h2&gt;
+  &lt;p&gt;Texto sin cerrar&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+      </div>
+
+      <p class="web-note-compact reveal" data-i18n="web-note-compact">A diferencia de un lenguaje de programación, el navegador no siempre avisa el error: una propiedad mal escrita como <code>background-colr</code> simplemente se ignora en silencio, sin romper la página.</p>
+    </div>
+  </section>
+
+  <!-- ============ 9. CÓDIGO LIMPIO ============ -->
+  <section class="section" aria-label="Código limpio">
+    <div class="container container-narrow">
+      <blockquote class="big-quote reveal" data-i18n="big-quote">
+        “El código no solo debe funcionar.<br>También debe poder <span class="grad-text">entenderse</span>.”
+      </blockquote>
+
+      <div class="principles-grid">
+        <article class="principle-card reveal">
+          <span class="principle-icon" aria-hidden="true">◇</span>
+          <h3 data-i18n="principle1-title">Claridad</h3>
+          <p data-i18n="principle1-desc">El código se explica a sí mismo, sin ambigüedad en su intención.</p>
+        </article>
+        <article class="principle-card reveal">
+          <span class="principle-icon" aria-hidden="true">≡</span>
+          <h3 data-i18n="principle2-title">Consistencia</h3>
+          <p data-i18n="principle2-desc">Las mismas reglas se aplican en todo el proyecto, sin excepciones arbitrarias.</p>
+        </article>
+        <article class="principle-card reveal">
+          <span class="principle-icon" aria-hidden="true">◎</span>
+          <h3 data-i18n="principle3-title">Legibilidad</h3>
+          <p data-i18n="principle3-desc">Cualquier persona del equipo puede leerlo y comprenderlo rápidamente.</p>
+        </article>
+        <article class="principle-card reveal">
+          <span class="principle-icon" aria-hidden="true">⟲</span>
+          <h3 data-i18n="principle4-title">Mantenibilidad</h3>
+          <p data-i18n="principle4-desc">Puede modificarse o extenderse con bajo riesgo de introducir errores.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10. ERROR INTERACTIVO ============ -->
+  <section class="section section-alt" aria-label="Detecta el problema">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="error-title">¿Puedes detectar el problema?</h2>
+      <p class="section-lead reveal" data-i18n="error-lead">Observa el siguiente fragmento y piensa qué reglas de estilo no está siguiendo.</p>
+
+      <div class="error-wrap reveal">
+        <div class="editor-window" id="errorEditor">
+          <div class="editor-chrome">
+            <span class="editor-dot red"></span><span class="editor-dot yellow"></span><span class="editor-dot green"></span>
+            <span class="editor-filename">calcular.js</span>
+          </div>
+          <pre class="editor-body" id="errorCodeBody"><code id="errorCode">function calcular(a,b){
+let resultado=a+b
+console.log(resultado)
+}</code></pre>
+        </div>
+
+        <div class="error-hints">
+          <span class="hint-chip" data-i18n="hint1">Espaciado</span>
+          <span class="hint-chip" data-i18n="hint2">Indentación</span>
+          <span class="hint-chip" data-i18n="hint3">Consistencia</span>
+          <span class="hint-chip" data-i18n="hint4">Punto y coma <em>(depende del lenguaje/convención)</em></span>
+        </div>
+
+        <button class="btn btn-primary" id="revealSolutionBtn">Ver solución</button>
+
+        <div class="solution-box" id="solutionBox" hidden>
+          <div class="editor-window">
+            <div class="editor-chrome">
+              <span class="editor-dot red"></span><span class="editor-dot yellow"></span><span class="editor-dot green"></span>
+              <span class="editor-filename">calcular.solucion.js</span>
+            </div>
+            <pre class="editor-body"><code>function calcular(a, b) {
+    let resultado = a + b;
+    console.log(resultado);
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11. FLUJO VISUAL ============ -->
+  <section class="section" aria-label="Flujo del código al mantenimiento">
+    <div class="container">
+      <h2 class="section-title reveal" data-i18n="flow-title">De la idea al código mantenible</h2>
+      <div class="flow" id="flowDiagram">
+        <div class="flow-step reveal"><span data-i18n="flow1">IDEA</span></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step reveal"><span data-i18n="flow2">SINTAXIS</span></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step reveal"><span data-i18n="flow3">CÓDIGO</span></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step reveal"><span data-i18n="flow4">STYLE</span></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step reveal"><span data-i18n="flow5">LEGIBILIDAD</span></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step reveal"><span data-i18n="flow6">MANTENIBILIDAD</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12. BUENAS PRÁCTICAS ============ -->
+  <section id="practicas" class="section section-alt" aria-label="Buenas prácticas">
+    <div class="container container-narrow">
+      <h2 class="section-title reveal" data-i18n="practicas-title">Buenas prácticas</h2>
+      <ul class="practices-list">
+        <li class="reveal" data-i18n="practice1">Mantener una indentación consistente.</li>
+        <li class="reveal" data-i18n="practice2">Utilizar nombres descriptivos.</li>
+        <li class="reveal" data-i18n="practice3">Mantener un espaciado uniforme.</li>
+        <li class="reveal" data-i18n="practice4">Evitar código innecesariamente complejo.</li>
+        <li class="reveal" data-i18n="practice5">Utilizar comentarios cuando aporten contexto.</li>
+        <li class="reveal" data-i18n="practice6">Seguir las convenciones del lenguaje.</li>
+        <li class="reveal" data-i18n="practice7">Mantener una estructura visual clara.</li>
+        <li class="reveal" data-i18n="practice8">Priorizar la legibilidad.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 13. CONCLUSIÓN ============ -->
+  <section id="conclusion" class="section conclusion" aria-label="Conclusión">
+    <div class="container container-narrow">
+      <h2 class="conclusion-title reveal" data-i18n="conclusion-title">
+        La sintaxis hace que el código <span class="grad-text">funcione</span>.<br>
+        El estilo hace que el código se <span class="grad-text">entienda</span>.
+      </h2>
+
+      <div class="conclusion-grid reveal">
+        <div class="conclusion-item">
+          <span class="conclusion-label">Syntax</span>
+          <span class="conclusion-value" data-i18n="conclusion-val1">Reglas</span>
+        </div>
+        <div class="conclusion-item">
+          <span class="conclusion-label">Style</span>
+          <span class="conclusion-value" data-i18n="conclusion-val2">Organización</span>
+        </div>
+        <div class="conclusion-item">
+          <span class="conclusion-label">Clean Code</span>
+          <span class="conclusion-value" data-i18n="conclusion-val3">Comprensión</span>
+        </div>
+      </div>
+
+      <a href="#top" class="btn btn-primary reveal" data-i18n="back-to-top">Volver al inicio</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p data-i18n="footer-text">Syntax Style — Programación en JAVA · Ingeniería de Telecomunicaciones - UTS - Docente Ricardo Medina</p>
+</footer>
+
+<script>
+/* ==========================================================================
+   SYNTAX STYLE — script.js
+   Vanilla JS. Sin dependencias externas.
+   Secciones: navbar, menú móvil, reveal on scroll, hero typing,
+   anatomía interactiva, comparación (barras), ordena el código,
+   tabs de lenguajes, gráfico de legibilidad, error interactivo,
+   modo presentación, indicador de sección.
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ------------------------------------------------------------------
+     0. IDIOMA (ES/EN) — funciona 100% localmente, sin conexión a
+     internet ni servicios externos: todo el diccionario vive en este
+     mismo archivo y el cambio de idioma solo manipula el DOM ya cargado.
+     ------------------------------------------------------------------ */
+  let currentLang = 'es';
+
+  // Diccionario de textos dinámicos (los que ya cambian vía JS)
+  const STRINGS = {
+    hamburgerOpen:   { es: 'Abrir menú', en: 'Open menu' },
+    hamburgerClose:  { es: 'Cerrar menú', en: 'Close menu' },
+    themeToLight:    { es: 'Cambiar a modo claro', en: 'Switch to light mode' },
+    themeToDark:     { es: 'Cambiar a modo oscuro', en: 'Switch to dark mode' },
+    applyStyle:      { es: 'Aplicar style', en: 'Apply style' },
+    revertStyle:     { es: 'Revertir a original', en: 'Revert to original' },
+    orderBefore:     { es: 'Antes → Menor legibilidad', en: 'Before → Lower readability' },
+    orderAfter:      { es: 'Después → Mayor legibilidad', en: 'After → Higher readability' },
+    revealSolution:  { es: 'Ver solución', en: 'See solution' },
+    hideSolution:    { es: 'Ocultar solución', en: 'Hide solution' },
+    langBtnLabel:    { es: 'EN', en: 'ES' },
+    langBtnAria:     { es: 'Switch to English', en: 'Cambiar a español' }
+  };
+
+  // Diccionario EN para elementos [data-i18n] (el ES ya vive en el propio HTML)
+  const EN = {
+    'nav-inicio': 'Home', 'nav-analogia': 'Analogy', 'nav-concepto': 'Concept',
+    'nav-anatomia': 'Anatomy', 'nav-comparacion': 'Comparison', 'nav-estilos': 'Styles',
+    'nav-lenguajes': 'Languages', 'nav-disenoweb': 'Web', 'nav-practicas': 'Practices',
+    'nav-conclusion': 'Conclusion',
+    'presentation-label': 'Presentation mode',
+
+    'hero-eyebrow': 'Paula Cogua - Edwin García - JAVA Programming E161',
+    'hero-subtitle': 'The way code communicates',
+    'hero-text': 'Understanding <strong>syntax</strong> lets you write instructions machines can interpret. Understanding <strong>style</strong> lets those instructions also be clear to people.',
+    'hero-btn-explore': 'Explore the topic',
+    'hero-btn-example': 'See example',
+    'hero-filename': 'greeting.js',
+
+    'analogia-eyebrow': 'Literature &amp; linguistics',
+    'phrase1-text': 'Let\'s eat<span class="phrase-diff">,</span> Grandma!',
+    'phrase1-note': 'Comma before "Grandma" → an invitation to eat together',
+    'phrase2-text': 'Let\'s eat Grandma!',
+    'phrase2-note': 'No comma → reads like eating Grandma',
+    'phrase3-text': 'Let\'s <span class="phrase-diff">aet</span> Grandma!',
+    'phrase3-note': '"aet" instead of "eat" → the form breaks down',
+    'poem-line1': 'Three sentences.',
+    'poem-line2': 'Almost the same words.',
+    'poem-line3': 'But they don\'t mean exactly the same thing.',
+
+    'concepto-title': 'What is <span class="grad-text">Syntax Style</span>?',
+    'concepto-lead': 'Two distinct concepts, united by one goal: code that works and code that\'s understood.',
+    'concept1-desc': 'Syntax defines the rules that determine how a programming language must be written so it can be interpreted correctly.',
+    'concept1-question': 'How should it be written?',
+    'concept2-desc': 'Style defines how we organize and present that code to make it more readable, consistent, and easier to maintain.',
+    'concept2-question': 'How can we write it better?',
+
+    'anatomia-title': 'Anatomy of the code',
+    'anatomia-lead': 'Hover or tap each element to discover what role it plays within the syntax.',
+    'anatomy-placeholder': 'Select an element of the code to see its explanation here.',
+
+    'comparacion-title': 'Syntax vs. Style',
+    'comparacion-lead': 'Both fragments are syntactically correct. Only one communicates clearly.',
+    'badge-a': 'Code A — Works',
+    'vs-arrow-top': 'SAME LOGIC',
+    'vs-arrow-bottom': 'DIFFERENT READABILITY',
+    'badge-b': 'Code B — Better style',
+    'metric1': 'Readability', 'metric2': 'Consistency', 'metric3': 'Maintainability', 'metric4': 'Understanding',
+    'metric-caption': 'Qualitative comparison of code A (no style) versus code B (with style).',
+
+    'estilos-title': 'Style rules',
+    'estilos-lead': 'Five conventions that turn functional code into readable code.',
+    'rule1-title': 'Indentation',
+    'rule1-desc': 'Indentation makes it easy to visually identify where each code block begins and ends.',
+    'rule2-title': 'Spacing',
+    'rule2-desc': '<span class="strike">let total=precio*cantidad;</span> — no spaces, harder to read at a glance.',
+    'rule3-title': 'Descriptive names',
+    'rule3-desc': 'A descriptive name explains its purpose without needing extra comments.',
+    'rule4-title': 'Consistency',
+    'rule4-desc': 'No single convention is wrong on its own; what matters is keeping it uniform throughout the project.',
+    'rule5-title': 'Comments',
+    'rule5-desc': 'A good comment adds context that the code alone can\'t convey.',
+    'order-title': 'Interactivity: sort out the code',
+
+    'lenguajes-title': 'Every language has its own syntax',
+    'lenguajes-lead': 'The same logic, expressed with different rules.',
+    'lang-conclusion': 'Different syntax → same goal.',
+
+    'disenoweb-title': 'Syntax Style in <span class="grad-text">web design</span>',
+    'badge-html-bad': 'HTML — Unclosed tag',
+    'vs-arrow2-top': 'SAME INTENT',
+    'vs-arrow2-bottom': 'DIFFERENT RENDERING',
+    'badge-html-good': 'HTML — Correct structure',
+    'web-note-compact': 'Unlike a programming language, the browser doesn\'t always flag the error: a mistyped property like <code>background-colr</code> is simply ignored in silence, without breaking the page.',
+
+    'big-quote': '“Code shouldn\'t only work.<br>It should also be understood.”',
+    'principle1-title': 'Clarity',
+    'principle1-desc': 'The code explains itself, with no ambiguity in its intent.',
+    'principle2-title': 'Consistency',
+    'principle2-desc': 'The same rules apply throughout the project, with no arbitrary exceptions.',
+    'principle3-title': 'Readability',
+    'principle3-desc': 'Anyone on the team can read it and understand it quickly.',
+    'principle4-title': 'Maintainability',
+    'principle4-desc': 'It can be modified or extended with low risk of introducing errors.',
+
+    'error-title': 'Can you spot the problem?',
+    'error-lead': 'Look at the following fragment and think about which style rules it isn\'t following.',
+    'hint1': 'Spacing', 'hint2': 'Indentation', 'hint3': 'Consistency',
+    'hint4': 'Semicolons <em>(depends on the language/convention)</em>',
+
+    'flow-title': 'From idea to maintainable code',
+    'flow1': 'IDEA', 'flow2': 'SYNTAX', 'flow3': 'CODE', 'flow4': 'STYLE',
+    'flow5': 'READABILITY', 'flow6': 'MAINTAINABILITY',
+
+    'practicas-title': 'Best practices',
+    'practice1': 'Keep indentation consistent.',
+    'practice2': 'Use descriptive names.',
+    'practice3': 'Keep spacing uniform.',
+    'practice4': 'Avoid unnecessarily complex code.',
+    'practice5': 'Use comments when they add context.',
+    'practice6': 'Follow the language\'s conventions.',
+    'practice7': 'Keep a clear visual structure.',
+    'practice8': 'Prioritize readability.',
+
+    'conclusion-title': 'Syntax makes the code <span class="grad-text">work</span>.<br>Style makes the code <span class="grad-text">understood</span>.',
+    'conclusion-val1': 'Rules', 'conclusion-val2': 'Organization', 'conclusion-val3': 'Understanding',
+    'back-to-top': 'Back to top',
+
+    'footer-text': 'Syntax Style — JAVA Programming · Telecommunications Engineering - UTS - Professor Ricardo Medina'
+  };
+
+  // aria-label EN para elementos [data-i18n-aria]
+  const ARIA_EN = {
+    'hero-editor-aria': 'Code editor showing a greeting function in JavaScript'
+  };
+
+  // Captura el contenido ES original (ya está en el HTML) antes de tocar nada
+  const I18N_ES = {};
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    I18N_ES[el.dataset.i18n] = el.innerHTML;
+  });
+  const ARIA_ES = {};
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    ARIA_ES[el.dataset.i18nAria] = el.getAttribute('aria-label');
+  });
+
+  const applyGenericI18n = (lang) => {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      const value = lang === 'en' ? EN[key] : I18N_ES[key];
+      if (value !== undefined) el.innerHTML = value;
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+      const key = el.dataset.i18nAria;
+      const value = lang === 'en' ? ARIA_EN[key] : ARIA_ES[key];
+      if (value !== undefined) el.setAttribute('aria-label', value);
+    });
+    document.documentElement.setAttribute('lang', lang);
+  };
+
+  /* ------------------------------------------------------------------
+     1. NAVBAR: estado al hacer scroll + menú hamburguesa
+     ------------------------------------------------------------------ */
+  const navbar = document.getElementById('navbar');
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+
+  const updateNavbarState = () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 12);
+  };
+  updateNavbarState();
+  window.addEventListener('scroll', updateNavbarState, { passive: true });
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = document.body.classList.toggle('nav-open');
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    hamburger.setAttribute('aria-label', STRINGS[isOpen ? 'hamburgerClose' : 'hamburgerOpen'][currentLang]);
+  });
+
+  navLinks.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.body.classList.remove('nav-open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  /* ------------------------------------------------------------------
+     2. NAV ACTIVO + INDICADOR DE SECCIÓN según scroll
+     ------------------------------------------------------------------ */
+  const trackedSections = Array.from(document.querySelectorAll('main section[id]'));
+  const navLinkEls = Array.from(document.querySelectorAll('.nav-link'));
+  const sectionCurrentEl = document.getElementById('sectionCurrent');
+  const sectionTotalEl = document.getElementById('sectionTotal');
+  sectionTotalEl.textContent = String(trackedSections.length).padStart(2, '0');
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinkEls.forEach(l => l.classList.toggle('active', l.dataset.section === id));
+        const idx = trackedSections.findIndex(s => s.id === id) + 1;
+        sectionCurrentEl.textContent = String(idx).padStart(2, '0');
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+  trackedSections.forEach(s => sectionObserver.observe(s));
+
+  /* ------------------------------------------------------------------
+     3. REVEAL ON SCROLL (fade-in progresivo de tarjetas y bloques)
+     ------------------------------------------------------------------ */
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  /* ------------------------------------------------------------------
+     4. HERO: código escrito progresivamente
+     ------------------------------------------------------------------ */
+  const heroCodeTarget = document.getElementById('heroTypedCode');
+  const heroSourceES =
+`function saludar(nombre) {
+    return \`Hola, \${nombre}\`;
+}`;
+  const heroSourceEN =
+`function greet(name) {
+    return \`Hello, \${name}\`;
+}`;
+
+  const typeCode = (el, text, speed = 28) => {
+    let i = 0;
+    const tick = () => {
+      if (i <= text.length) {
+        el.textContent = text.slice(0, i);
+        i++;
+        setTimeout(tick, speed);
+      }
+    };
+    tick();
+  };
+
+  // Inicia la animación cuando el hero entra en vista (o de inmediato si ya está visible)
+  const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        typeCode(heroCodeTarget, currentLang === 'en' ? heroSourceEN : heroSourceES);
+        heroObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  heroObserver.observe(document.querySelector('.hero'));
+
+  /* ------------------------------------------------------------------
+     5. ANATOMÍA DEL CÓDIGO: click/hover para explicar tokens
+     ------------------------------------------------------------------ */
+  const anatomyCode = document.getElementById('anatomyCode');
+  const anatomyExplain = document.getElementById('anatomyExplain');
+
+  if (anatomyCode) {
+    const tokens = anatomyCode.querySelectorAll('.tok');
+    tokens.forEach(tok => {
+      tok.setAttribute('tabindex', '0');
+      tok.setAttribute('role', 'button');
+
+      const showExplanation = () => {
+        tokens.forEach(t => t.classList.remove('tok-active'));
+        tok.classList.add('tok-active');
+        const term = tok.textContent.trim();
+        const desc = currentLang === 'en' ? (tok.dataset.tipEn || tok.dataset.tip) : tok.dataset.tip;
+        anatomyExplain.innerHTML = `<div><span class="tip-term">${term}</span><span class="tip-desc">${desc}</span></div>`;
+      };
+
+      tok.addEventListener('click', showExplanation);
+      tok.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showExplanation();
+        }
+      });
+      tok.addEventListener('mouseenter', showExplanation);
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     6. COMPARACIÓN: animar barras de métricas al entrar en vista
+     ------------------------------------------------------------------ */
+  const metricFills = document.querySelectorAll('.metric-fill');
+  const metricObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.width = entry.target.dataset.fill + '%';
+        metricObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  metricFills.forEach(f => metricObserver.observe(f));
+
+  /* ------------------------------------------------------------------
+     7. ORDENA EL CÓDIGO: alternar entre versión sin estilo y con estilo
+     ------------------------------------------------------------------ */
+  const applyStyleBtn = document.getElementById('applyStyleBtn');
+  const orderCode = document.getElementById('orderCode');
+  const orderTag = document.getElementById('orderTag');
+
+  const RAW_CODE = `function calcularTotal(precio,cantidad){
+let total=precio*cantidad;
+return total;
+}`;
+  const STYLED_CODE = `function calcularTotal(precio, cantidad) {
+    let total = precio * cantidad;
+    return total;
+}`;
+
+  let styled = false;
+  if (applyStyleBtn) {
+    applyStyleBtn.textContent = STRINGS.applyStyle[currentLang];
+    applyStyleBtn.addEventListener('click', () => {
+      styled = !styled;
+      orderCode.classList.add('transitioning');
+      setTimeout(() => {
+        orderCode.textContent = styled ? STYLED_CODE : RAW_CODE;
+        orderCode.classList.remove('transitioning');
+        orderTag.textContent = STRINGS[styled ? 'orderAfter' : 'orderBefore'][currentLang];
+        orderTag.classList.toggle('before', !styled);
+        orderTag.classList.toggle('after', styled);
+        applyStyleBtn.textContent = STRINGS[styled ? 'revertStyle' : 'applyStyle'][currentLang];
+      }, 220);
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     8. LENGUAJES: tabs de JavaScript / Python / Java
+     ------------------------------------------------------------------ */
+  const LANG_DATA = {
+    js: {
+      filename: 'sumar.js',
+      code: `function sumar(a, b) {
+    return a + b;
+}`,
+      explain: 'JavaScript utiliza <code>function</code>, llaves para delimitar bloques y punto y coma opcional al final de cada instrucción.',
+      explainEN: 'JavaScript uses <code>function</code>, braces to delimit blocks, and an optional semicolon at the end of each statement.'
+    },
+    py: {
+      filename: 'sumar.py',
+      code: `def sumar(a, b):
+    return a + b`,
+      explain: 'Python prescinde de llaves: la indentación misma define los bloques, y no requiere punto y coma.',
+      explainEN: 'Python does without braces: indentation itself defines the blocks, and no semicolon is required.'
+    },
+    java: {
+      filename: 'Sumar.java',
+      code: `public int sumar(int a, int b) {
+    return a + b;
+}`,
+      explain: 'Java exige tipado explícito en cada parámetro y valor de retorno, además de llaves y punto y coma obligatorios.',
+      explainEN: 'Java requires explicit typing for every parameter and return value, plus mandatory braces and semicolons.'
+    },
+    cpp: {
+      filename: 'sumar.cpp',
+      code: `int sumar(int a, int b) {
+    return a + b;
+}`,
+      explain: 'C++ comparte la sintaxis de tipado explícito y llaves de Java, pero compila directamente a código máquina: un error de sintaxis aquí impide generar el ejecutable.',
+      explainEN: 'C++ shares Java\'s explicit-typing and brace syntax, but compiles directly to machine code: a syntax error here prevents building the executable.'
+    }
+  };
+
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const langCode = document.getElementById('langCode');
+  const langFilename = document.getElementById('langFilename');
+  const langExplain = document.getElementById('langExplain');
+
+  const renderLangTab = (langKey) => {
+    const data = LANG_DATA[langKey];
+    langCode.textContent = data.code;
+    langFilename.textContent = data.filename;
+    langExplain.innerHTML = currentLang === 'en' ? data.explainEN : data.explain;
+  };
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      langCode.parentElement.parentElement.style.opacity = '0.35';
+      setTimeout(() => {
+        renderLangTab(btn.dataset.lang);
+        langCode.parentElement.parentElement.style.opacity = '1';
+      }, 160);
+    });
+  });
+
+  /* ------------------------------------------------------------------
+     10. ERROR INTERACTIVO: revelar solución
+     ------------------------------------------------------------------ */
+  const revealSolutionBtn = document.getElementById('revealSolutionBtn');
+  const solutionBox = document.getElementById('solutionBox');
+
+  if (revealSolutionBtn) {
+    revealSolutionBtn.textContent = STRINGS.revealSolution[currentLang];
+    revealSolutionBtn.addEventListener('click', () => {
+      const isHidden = solutionBox.hasAttribute('hidden');
+      if (isHidden) {
+        solutionBox.removeAttribute('hidden');
+        revealSolutionBtn.textContent = STRINGS.hideSolution[currentLang];
+        solutionBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        solutionBox.setAttribute('hidden', '');
+        revealSolutionBtn.textContent = STRINGS.revealSolution[currentLang];
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     11. MODO PRESENTACIÓN
+     ------------------------------------------------------------------ */
+  const presentationToggle = document.getElementById('presentationToggle');
+  presentationToggle.addEventListener('click', () => {
+    const active = document.body.classList.toggle('presentation-mode');
+    presentationToggle.setAttribute('aria-pressed', String(active));
+  });
+
+  /* ------------------------------------------------------------------
+     11B. MODO OSCURO / CLARO
+     Pensado para exposiciones: si la sala tiene mucha luz o se proyecta
+     sobre una pantalla clara, el modo claro mejora el contraste.
+     Preferencia guardada en localStorage y respeta prefers-color-scheme.
+     ------------------------------------------------------------------ */
+  const themeToggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+
+  const applyTheme = (theme) => {
+    root.setAttribute('data-theme', theme);
+    const isLight = theme === 'light';
+    themeToggle.setAttribute('aria-pressed', String(isLight));
+    themeToggle.setAttribute('aria-label', STRINGS[isLight ? 'themeToDark' : 'themeToLight'][currentLang]);
+  };
+
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('syntaxstyle-theme'); } catch (e) { /* almacenamiento no disponible */ }
+
+  const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  applyTheme(savedTheme || (prefersLight ? 'light' : 'dark'));
+
+  themeToggle.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    try { localStorage.setItem('syntaxstyle-theme', next); } catch (e) { /* almacenamiento no disponible */ }
+  });
+
+  /* ------------------------------------------------------------------
+     12. FLOW STEPS: reveal escalonado (stagger) al hacer scroll
+     ------------------------------------------------------------------ */
+  const flowSteps = document.querySelectorAll('.flow-step.reveal');
+  flowSteps.forEach((step, i) => {
+    step.style.transitionDelay = `${i * 80}ms`;
+  });
+
+  /* ------------------------------------------------------------------
+     13. IDIOMA — orquestación final del cambio ES/EN
+     Aplica el diccionario genérico y además re-renderiza todo lo que
+     el resto del script generó dinámicamente (código tecleado del hero,
+     pestañas de lenguajes, botones de estado, tooltips de anatomía).
+     Todo corre en el propio navegador: no requiere red ni servidor.
+     ------------------------------------------------------------------ */
+  const langToggle = document.getElementById('langToggle');
+  const activeTabBtn = () => document.querySelector('.tab-btn.active');
+
+  const applyLanguage = (lang) => {
+    currentLang = lang;
+    applyGenericI18n(lang);
+
+    // Botón de idioma: muestra el idioma al que se puede cambiar
+    langToggle.textContent = STRINGS.langBtnLabel[lang];
+    langToggle.setAttribute('aria-label', STRINGS.langBtnAria[lang]);
+
+    // Aria dinámicos ya controlados por otros toggles
+    hamburger.setAttribute('aria-label', STRINGS[document.body.classList.contains('nav-open') ? 'hamburgerClose' : 'hamburgerOpen'][lang]);
+    const isLight = root.getAttribute('data-theme') === 'light';
+    themeToggle.setAttribute('aria-label', STRINGS[isLight ? 'themeToDark' : 'themeToLight'][lang]);
+
+    // Código del hero: swap instantáneo (sin re-tipear) a la fuente del idioma activo
+    if (heroCodeTarget.textContent) {
+      heroCodeTarget.textContent = lang === 'en' ? heroSourceEN : heroSourceES;
+    }
+
+    // Pestaña de lenguaje activa: re-renderiza su explicación en el idioma actual
+    const active = activeTabBtn();
+    if (active) renderLangTab(active.dataset.lang);
+
+    // Botón "Aplicar style" / etiqueta antes-después: respeta el estado actual
+    if (applyStyleBtn) {
+      applyStyleBtn.textContent = STRINGS[styled ? 'revertStyle' : 'applyStyle'][lang];
+      orderTag.textContent = STRINGS[styled ? 'orderAfter' : 'orderBefore'][lang];
+    }
+
+    // Botón de solución: respeta si ya está revelada o no
+    if (revealSolutionBtn) {
+      const isHidden = solutionBox.hasAttribute('hidden');
+      revealSolutionBtn.textContent = STRINGS[isHidden ? 'revealSolution' : 'hideSolution'][lang];
+    }
+
+    // Anatomía: evita dejar un tooltip a medio traducir
+    if (anatomyExplain) {
+      anatomyExplain.innerHTML = `<p class="anatomy-placeholder">${lang === 'en' ? EN['anatomy-placeholder'] : I18N_ES['anatomy-placeholder']}</p>`;
+      anatomyCode.querySelectorAll('.tok.tok-active').forEach(t => t.classList.remove('tok-active'));
+    }
+
+    try { localStorage.setItem('syntaxstyle-lang', lang); } catch (e) { /* almacenamiento no disponible */ }
+  };
+
+  let savedLang = null;
+  try { savedLang = localStorage.getItem('syntaxstyle-lang'); } catch (e) { /* almacenamiento no disponible */ }
+  if (savedLang === 'en') applyLanguage('en');
+
+  langToggle.addEventListener('click', () => {
+    applyLanguage(currentLang === 'es' ? 'en' : 'es');
+  });
+
+});
+
+</script>
+</body>
+</html>
