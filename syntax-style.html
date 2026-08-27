@@ -692,6 +692,54 @@ body.presentation-mode .section-indicator { opacity: 1; }
 .conclusion-label { font-family: var(--font-mono); font-size: 0.78rem; color: var(--cyan); }
 .conclusion-value { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
 
+/* ---------- Referencias bibliográficas ---------- */
+.references {
+  margin-top: 56px;
+  padding-top: 36px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+.references-title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  text-align: center;
+}
+.references-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.references-list li {
+  display: flex;
+  gap: 12px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.02);
+}
+.ref-index {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.ref-author { color: var(--text); font-weight: 600; }
+.ref-title { font-style: italic; color: var(--text); }
+.ref-source { color: var(--text-faint); }
+
 /* ==========================================================================
    FOOTER
    ========================================================================== */
@@ -1260,6 +1308,24 @@ console.log(resultado)
         </div>
       </div>
 
+      <div class="references reveal">
+        <h3 class="references-title" data-i18n="references-title">Referencias bibliográficas</h3>
+        <ol class="references-list">
+          <li>
+            <span class="ref-index">[1]</span>
+            <span><span class="ref-author">Martin, R. C.</span> (2008). <span class="ref-title">Clean Code: A Handbook of Agile Software Craftsmanship</span>. <span class="ref-source">Prentice Hall.</span></span>
+          </li>
+          <li>
+            <span class="ref-index">[2]</span>
+            <span><span class="ref-author">Kernighan, B. W., & Pike, R.</span> (1999). <span class="ref-title">The Practice of Programming</span>. <span class="ref-source">Addison-Wesley.</span></span>
+          </li>
+          <li>
+            <span class="ref-index">[3]</span>
+            <span><span class="ref-author">Google</span> (2024). <span class="ref-title">Google Style Guides</span>. <span class="ref-source" data-i18n="ref3-source">Recuperado de google.github.io/styleguide</span></span>
+          </li>
+        </ol>
+      </div>
+
       <a href="#top" class="btn btn-primary reveal" data-i18n="back-to-top">Volver al inicio</a>
     </div>
   </section>
@@ -1407,6 +1473,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     'conclusion-title': 'Syntax makes the code <span class="grad-text">work</span>.<br>Style makes the code <span class="grad-text">understood</span>.',
     'conclusion-val1': 'Rules', 'conclusion-val2': 'Organization', 'conclusion-val3': 'Understanding',
+    'references-title': 'Bibliographic references',
+    'ref3-source': 'Retrieved from google.github.io/styleguide',
     'back-to-top': 'Back to top',
 
     'footer-text': 'Syntax Style — JAVA Programming · Telecommunications Engineering - UTS - Professor Ricardo Medina'
